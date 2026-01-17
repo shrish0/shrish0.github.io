@@ -1,0 +1,14 @@
+{
+  "core": [
+    { "name": "Vue.js", "colorClass": "text-primary" },
+    { "name": "TypeScript", "colorClass": "text-blue-400" },
+    { "name": ".NET / C#", "colorClass": "text-purple-400" },
+    { "name": "SignalR", "colorClass": "text-red-400" },
+    { "name": "Redis", "colorClass": "text-red-500" },
+    { "name": "SQL Server", "colorClass": "text-orange-400" }
+  ],
+  "stats": [
+    { "label": "CGPA", "value": "8.44", "subtext": "B.Tech (CS)" },
+    { "label": "Hackathon Wins", "value": "2+", "subtext": "National Level" }
+  ]
+}

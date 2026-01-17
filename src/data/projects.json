@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "title": "Edu Bot",
+    "subtitle": "Learning Environment for Disabled",
+    "description": "An educational website with voice command capabilities (Google Search, YouTube) allowing hands-free interaction for physically disabled users.",
+    "tags": ["Python", "Django", "Selenium"]
+  },
+  {
+    "id": 2,
+    "title": "Agri Core",
+    "subtitle": "Smart Farmer Assistant",
+    "description": "Crop yield and disease prediction app using <strong>TensorFlow</strong>. Features weather-based suggestions and government scheme integration.",
+    "tags": ["TensorFlow", "Django", "ML"]
+  }
+]

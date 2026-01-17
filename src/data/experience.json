@@ -1,0 +1,25 @@
+[
+  {
+    "id": 1,
+    "role": "Associate Software Engineer",
+    "company": "Innostax Tech LLC",
+    "period": "Sep 2025 - Present",
+    "summary": "Working on <strong>LISA</strong>, a major insurance domain application.",
+    "highlights": [
+      "Developing frontend features using <strong>Vue.js with TypeScript</strong>.",
+      "Implementing real-time functionalities (live agent status, ring groups) using <strong>SignalR</strong>.",
+      "Integrating <strong>Redis caching</strong> and <strong>Twilio SMS</strong> services for enhanced performance."
+    ]
+  },
+  {
+    "id": 2,
+    "role": "Software Intern",
+    "company": "Maharshi Ayurveda Pvt Ltd",
+    "period": "Jul 2024 - Aug 2024",
+    "highlights": [
+      "Developed a <strong>Business Workflow Management System</strong> in ASP.NET MVC.",
+      "Implemented role-based user management and automated bulk import/export workflows.",
+      "Designed responsive internal dashboards for process tracking."
+    ]
+  }
+]
