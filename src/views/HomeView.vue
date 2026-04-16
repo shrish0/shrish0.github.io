@@ -1,434 +1,324 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, onUnmounted } from 'vue'
-import profileData from '@/data/profile.json'
-import type { InformationCardType } from '@/utils/constants'
-import experienceData from '@/data/experience.json'
-import projectsData from '@/data/projects.json'
-import skillsData from '@/data/skills.json'
-import resumeData from '@/data/resume.json'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import resumeData from '../../public/resume.json'
+import TechnicalModal from '@/components/technical-modal.vue'
 
-import ModalComponent from '@/components/modal-component.vue'
-import SkillItem from '@/components/skill-item.vue'
-import InformationCard from '@/components/information-card.vue'
-
-const textToType = profileData.typewriterText
+// --- Typewriter Effect & Hero Data ---
+const name = resumeData.basics.name
+const headlineText = resumeData.basics.headline
 const displayedText = ref('')
 const isTyping = ref(true)
-const isAtBottom = ref(false)
-const showBio = ref(false)
-const slicedBioData = ref()
 
-// Modal State
-const showSkillModal = ref(false)
-const showEducationModal = ref(false)
-const showAwardsModal = ref(false)
-const modalTitle = ref('')
-
-type Skill = {
-  name: string
-  colorClass: string
-}
-
-const modalSkills = ref<Skill[]>([])
-
-const openSkillModal = (type: InformationCardType) => {
-  if (type === 'languages') {
-    modalTitle.value = 'Languages'
-    modalSkills.value = skillsData.languages
-  } else {
-    modalTitle.value = 'Frameworks & Tools'
-    modalSkills.value = skillsData.frameworks
-  }
-  showSkillModal.value = true
-}
-
+let typewriterInterval: ReturnType<typeof setInterval>
 const typeText = async () => {
-  // Initial pause
-  await new Promise((r) => setTimeout(r, 500))
+  await new Promise(r => setTimeout(r, 500))
   displayedText.value = ''
   isTyping.value = true
-
-  for (let i = 0; i < textToType.length; i++) {
-    displayedText.value += textToType[i]
-    await new Promise((resolve) => setTimeout(resolve, 100))
+  for (let i = 0; i < headlineText.length; i++) {
+    displayedText.value += headlineText[i]
+    await new Promise(resolve => setTimeout(resolve, 50))
   }
   isTyping.value = false
 }
 
-setInterval(() => {
-  typeText()
-}, 5000)
-
-const checkScrollPosition = () => {
-  const scrollPosition = window.scrollY + window.innerHeight
-  const bottomPosition = document.documentElement.scrollHeight
-  // Consider we are at bottom if within 50px
-  isAtBottom.value = scrollPosition >= bottomPosition - 50
-}
-
-const handleScrollAction = () => {
-  if (isAtBottom.value) {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  } else {
-    window.scrollBy({
-      top: window.innerHeight,
-      behavior: 'smooth',
-    })
-  }
-}
-
-watch(
-  showBio,
-  () => {
-    if (showBio.value) {
-      slicedBioData.value = profileData.bio
-    } else {
-      slicedBioData.value = profileData.bio.slice(0, 150) + '...'
-    }
-  },
-  { immediate: true },
-)
-
 onMounted(() => {
   typeText()
-  window.addEventListener('scroll', checkScrollPosition)
+  typewriterInterval = setInterval(typeText, 8000)
 })
 
 onUnmounted(() => {
-  window.removeEventListener('scroll', checkScrollPosition)
+  clearInterval(typewriterInterval)
 })
+
+// --- Skills Data ---
+const showSkillModal = ref(false)
+const activeSkill = ref({})
+
+const getTechIcon = (name: string) => {
+  const key = name.toLowerCase()
+  
+  if (key.includes('backend')) return 'dns' // Server racks
+  if (key.includes('frontend')) return 'web' // Web browser window
+  if (key.includes('language')) return 'terminal' // Code terminal
+  if (key.includes('database') || key.includes('caching')) return 'database' // Database cylinders
+  if (key.includes('tool') || key.includes('practice')) return 'handyman' // Wrench/gear
+  if (key.includes('cloud') || key.includes('devops')) return 'cloud'
+  if (key.includes('framework')) return 'extension'
+
+  return 'settings_input_component' // default
+}
+
+const skillsList = computed(() => {
+  const styles = [
+    { bg: 'bg-primary/20', text: 'text-primary', groupBg: 'group-hover:bg-primary' },
+    { bg: 'bg-secondary/20', text: 'text-secondary', groupBg: 'group-hover:bg-secondary' },
+    { bg: 'bg-primary-container/20', text: 'text-primary-container', groupBg: 'group-hover:bg-primary-container' },
+    { bg: 'bg-secondary-container/20', text: 'text-secondary-container', groupBg: 'group-hover:bg-secondary-container' },
+  ]
+  
+  return resumeData.sections.skills.items.filter(s => !s.hidden).map((skill, index) => {
+    const iconStr = getTechIcon(skill.name)
+    const style = styles[index % styles.length]
+    return {
+      name: skill.name,
+      proficiency: skill.proficiency,
+      level: skill.level,
+      status: 'Optimal',
+      icon: iconStr,
+      style: style,
+      config: {
+        title: skill.name,
+        efficiency: `Level ${skill.level}`,
+        overhead: 'Low',
+        description: `Core competencies in ${skill.name}.`,
+        bullets: skill.proficiency.split('|').map(s => s.trim()),
+        icon: iconStr,
+        level: skill.level
+      }
+    }
+  })
+})
+
+const openSkillModule = (config: any) => {
+  activeSkill.value = config
+  showSkillModal.value = true
+}
+
+const modulesContainer = ref<HTMLElement | null>(null)
+const scrollModules = (direction: 'left' | 'right') => {
+  if (modulesContainer.value) {
+    const scrollAmount = 350
+    modulesContainer.value.scrollBy({ left: direction === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' })
+  }
+}
+
+// --- Projects Data ---
+const projectsList = computed(() => {
+  return resumeData.sections.projects.items.filter(p => !p.hidden)
+})
+
+// --- Experience Data ---
+const experienceList = computed(() => {
+  return resumeData.sections.experience.items.filter(e => !e.hidden)
+})
+
+const getColors = (index: number) => {
+  const colors = ['primary', 'secondary', 'tertiary']
+  return colors[index % colors.length]
+}
 </script>
 
 <template>
-  <main class="relative bg-background overflow-hidden transition-colors duration-300">
-    <!-- Background Elements -->
-    <div class="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
-      <div
-        class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-primary/20 rounded-full blur-[120px] animate-pulse"
-      ></div>
-      <div
-        class="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[120px]"
-      ></div>
-    </div>
-
-    <!-- Scroll Action Button -->
-    <button
-      @click="handleScrollAction"
-      class="fixed bottom-10 right-10 z-50 p-4 rounded-full bg-primary/10 border border-primary/20 text-primary shadow-lg backdrop-blur-sm hover:bg-primary hover:text-white transition-all duration-300 group"
-      :class="{ 'animate-bounce': !isAtBottom }"
-      :title="isAtBottom ? 'Scroll to Top' : 'Scroll Down'"
-    >
-      <svg
-        class="w-6 h-6 transition-transform duration-500"
-        :class="{ 'rotate-180': isAtBottom }"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M19 14l-7 7m0 0l-7-7m7 7V3"
-        ></path>
-      </svg>
-    </button>
-
+  <main class="relative bg-surface text-on-surface pt-32 overflow-hidden min-h-screen">
     <!-- Hero Section -->
-    <section
-      id="home"
-      class="relative z-10 min-h-screen flex flex-col justify-center items-center text-center px-6"
-    >
-      <div class="space-y-6 max-w-4xl">
-        <div
-          class="inline-block px-4 py-1.5 rounded-full border border-primary/20 bg-primary/5 text-primary text-sm font-medium mb-4"
-        >
-          {{ profileData.status }}
+    <section id="home" class="max-w-7xl mx-auto px-8 mb-32 flex flex-col md:flex-row items-center gap-16 relative">
+      <div class="absolute -top-20 -left-20 w-96 h-96 bg-primary/5 rounded-full blur-[100px]"></div>
+      <div class="flex-1 z-10">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-highest border border-primary/20 mb-6 group cursor-pointer hover:border-primary transition-colors">
+          <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+          <span class="text-xs font-label uppercase tracking-widest text-primary">System initialization: ONLINE</span>
         </div>
-
-        <h1 class="text-5xl md:text-7xl font-bold tracking-tight text-heading">
-          <span class="block min-h-[1.2em]">
-            {{ displayedText
-            }}<span
-              class="animate-blink inline-block w-1.5 h-[0.8em] align-middle bg-primary ml-1"
-              :class="{ 'opacity-0': !isTyping }"
-            ></span>
-          </span>
+        <h1 class="text-6xl md:text-8xl font-headline font-bold text-on-surface tracking-tighter mb-4 leading-tight">
+           <span class="text-primary text-glow">{{ name.toUpperCase() }}</span>
         </h1>
-
-        <h2 class="text-xl md:text-3xl font-light text-text-mute">
-          {{ profileData.role }}
+        <h2 class="text-2xl md:text-3xl font-headline text-on-surface-variant tracking-tight mb-6 min-h-[40px]">
+          {{ displayedText }}<span class="inline-block w-1 h-[1em] bg-primary ml-1 animate-blink" :class="{ 'opacity-0': !isTyping }"></span>
         </h2>
-
-        <p class="text-lg text-text/80 max-w-2xl mx-auto leading-relaxed dark:text-white/80">
-          {{ profileData.bio }}
-        </p>
-
-        <div class="flex flex-col sm:flex-row gap-4 justify-center pt-8">
-          <a
-            href="#experience"
-            class="px-8 py-3.5 rounded-full bg-primary text-white font-semibold shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-1 transition-all"
-          >
-            See My Work
+        <div class="text-xl text-on-surface-variant max-w-xl mb-8 leading-relaxed font-body" v-html="resumeData.summary.content"></div>
+        <div class="flex flex-wrap gap-4">
+          <a :href="resumeData.basics.customFields.find(f => f.network === 'GitHub' || f.text === 'shrish0')?.link" target="_blank" class="px-8 py-4 aurora-glow text-surface font-bold rounded-xl hover:shadow-[0_0_30px_rgba(143,245,255,0.4)] transition-all cursor-pointer">
+            Access GitHub
           </a>
-          <a
-            :href="profileData.resumeUrl"
-            target="_blank"
-            rel="noopener"
-            class="px-8 py-3.5 rounded-full border border-primary/30 bg-primary/5 text-primary font-semibold hover:bg-primary hover:text-white transition-all"
-          >
+          <a href="/Resume.pdf" target="_blank" class="px-8 py-4 glass-panel text-primary font-bold rounded-xl hover:bg-surface-container-high transition-all cursor-pointer">
             View Resume
           </a>
-          <a
-            :href="`mailto:${profileData.email}`"
-            class="px-8 py-3.5 rounded-full border border-white/10 bg-white/5 text-heading font-semibold hover:bg-white/10 hover:border-white/20 transition-all"
-          >
-            Contact Me
-          </a>
         </div>
+      </div>
+      <div class="flex-1 relative hidden md:block">
+        <div class="relative z-10 w-full aspect-square rounded-3xl overflow-hidden glass-panel p-4 hover:ambient-glow transition-shadow duration-500">
+           <!-- Placeholder or actual image -->
+          <div class="w-full h-full bg-surface-container-highest rounded-2xl flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-700 overflow-hidden relative group">
+             <div class="absolute inset-0 bg-primary/10 group-hover:bg-transparent transition-colors z-10"></div>
+             <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjoNDyRxAscIO1vec3NZn-yaGjIoTMgGrp2WtOZwq-coRmMHMU8L_X6ankpqspbo6-9KwsBNAzW9KGVQ02077R_BV237sS6KTLQXO5D1EYriLdzulkHV6jL0M0Bo2dIivma0gjGlJ9UjAxacu41gl4-RPUQmepdpGmr8IpD34RWPyckAruwGfYies7YeBDGC5V32B1KqlQj2F17LKoxKUB-ISfdaVSq6Z8E5UFoDUoDC76G1YZNJY2L6i8VixMQgxyOqFsX-Vh5Yg" class="w-full h-full object-cover">
+          </div>
+        </div>
+        <!-- Decorative Elements -->
+        <div class="absolute -bottom-8 -right-8 w-48 h-48 border-r-2 border-b-2 border-primary/30 rounded-br-3xl"></div>
+        <div class="absolute -top-8 -left-8 w-24 h-24 border-l-2 border-t-2 border-secondary/30 rounded-tl-3xl"></div>
       </div>
     </section>
 
-    <!-- About Section -->
-    <section id="about" class="relative z-10 py-32 px-6">
-      <div class="max-w-6xl mx-auto">
-        <h3 class="text-sm font-bold tracking-wider text-primary uppercase mb-2">About Me</h3>
-        <h4 class="text-3xl md:text-4xl font-bold text-heading mb-12">
-          Building scalable <span class="text-primary">backend systems</span>.
-        </h4>
+    <!-- Core Intelligence (Skills) -->
+    <section id="intelligence" class="max-w-7xl mx-auto px-8 mb-48">
+      <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
+        <div>
+          <h2 class="text-label text-primary font-bold tracking-widest uppercase mb-4">Core Intelligence</h2>
+          <h3 class="text-4xl md:text-5xl font-headline font-bold text-on-surface">Technical Modules</h3>
+        </div>
+        <p class="text-on-surface-variant max-w-sm text-left md:text-right font-body">
+          Expertise in computational logic, microservices, and distributed systems.
+        </p>
+      </div>
 
-        <div class="grid md:grid-cols-2 gap-16 items-start">
-          <div class="relative group h-full flex items-center justify-center">
-            <div
-              class="absolute inset-0 bg-gradient-to-tr from-primary to-purple-500 rounded-2xl blur-lg opacity-20 group-hover:opacity-30 transition-opacity"
-            ></div>
-            <div
-              class="relative bg-background-soft border border-white/5 rounded-2xl p-8 shadow-2xl space-y-4"
-            >
-              <p class="text-lg leading-relaxed text-text">
-                {{ slicedBioData }}
-              </p>
-              <button class="text-primary font-medium hover:underline" @click="showBio = !showBio">
-                {{ showBio ? 'Show Less' : 'Read More' }}
-              </button>
+      <div class="relative group/slider">
+        <button @click="scrollModules('left')" class="absolute -left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full glass-panel hidden md:flex items-center justify-center opacity-0 group-hover/slider:opacity-100 transition-opacity hover:bg-surface-container-high border border-primary/20">
+          <span class="material-symbols-outlined">chevron_left</span>
+        </button>
+        
+        <div ref="modulesContainer" class="flex overflow-x-auto gap-6 py-10 -my-10 px-4 -mx-4 snap-x snap-mandatory scroll-smooth" style="scrollbar-width: none;">
+          <div v-for="skill in skillsList" :key="skill.name" @click="openSkillModule(skill.config)" class="glass-panel p-8 rounded-xl cursor-pointer hover:scale-[1.03] relative z-0 hover:z-10 transition-all border-primary/5 hover:ambient-glow min-w-[280px] md:min-w-[320px] snap-center shrink-0 group">
+            <div class="w-12 h-12 flex items-center justify-center rounded-lg mb-6 transition-colors group-hover:text-surface" :class="[skill.style.bg, skill.style.text, skill.style.groupBg]">
+              <span class="material-symbols-outlined">{{ skill.icon }}</span>
             </div>
-          </div>
-
-          <div class="space-y-6">
-            <h5 class="text-xl font-bold text-heading">Skills & Education</h5>
-
-            <!-- Skill Categories Buttons -->
-            <div class="grid grid-cols-2 gap-4">
-              <button
-                @click="openSkillModal('languages')"
-                class="p-4 rounded-xl bg-background-soft border border-white/5 hover:border-primary/50 text-left transition-all hover:-translate-y-1 group"
-              >
-                <div class="text-3xl mb-2">💻</div>
-                <div class="font-bold text-heading">Languages</div>
-                <div class="text-xs text-text-mute mt-1">JS, TS, C#, etc.</div>
-              </button>
-
-              <button
-                @click="openSkillModal('frameworks')"
-                class="p-4 rounded-xl bg-background-soft border border-white/5 hover:border-primary/50 text-left transition-all hover:-translate-y-1 group"
-              >
-                <div class="text-3xl mb-2">⚛️</div>
-                <div class="font-bold text-heading">Frameworks</div>
-                <div class="text-xs text-text-mute mt-1">FastAPI, Django, .NET</div>
-              </button>
-            </div>
-
-            <!-- Education & Achievements Cards -->
-            <div class="grid grid-cols-2 gap-4 mt-4">
-              <InformationCard
-                :title="profileData.education.title"
-                :subtitle="profileData.education.degree"
-                :details="[profileData.education.year, profileData.education.grade]"
-                class="cursor-pointer"
-                @click="showEducationModal = true"
-              />
-
-              <InformationCard
-                title="Achievements"
-                :subtitle="profileData.achievements?.[0]?.title || ''"
-                :details="[
-                  profileData.achievements?.[0]?.count || '',
-                  profileData.achievements?.[0]?.level || '',
-                ]"
-                class="cursor-pointer"
-                @click="showAwardsModal = true"
-              />
-            </div>
+            <h4 class="text-xl font-headline font-bold mb-3">{{ skill.name }}</h4>
+            <p class="text-sm text-on-surface-variant font-body mb-6 truncate" :title="skill.proficiency">{{ skill.proficiency }}</p>
+            <div class="text-xs font-label tracking-widest uppercase opacity-80" :class="skill.style.text">Level: {{ skill.level }} / 5</div>
           </div>
         </div>
+
+        <button @click="scrollModules('right')" class="absolute -right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full glass-panel hidden md:flex items-center justify-center opacity-0 group-hover/slider:opacity-100 transition-opacity hover:bg-surface-container-high border border-primary/20">
+          <span class="material-symbols-outlined">chevron_right</span>
+        </button>
       </div>
     </section>
 
-    <!-- Skills Modal -->
-    <ModalComponent :show="showSkillModal" :title="modalTitle" @close="showSkillModal = false">
-      <SkillItem :skills="modalSkills" />
-    </ModalComponent>
-
-    <!-- Education Modal -->
-    <ModalComponent
-      :show="showEducationModal"
-      title="Education History"
-      @close="showEducationModal = false"
-    >
-      <div class="space-y-4">
-        <div
-          v-for="edu in resumeData.sections.education.items"
-          :key="edu.id"
-          class="p-6 rounded-xl bg-background border border-white/5"
-        >
-          <h4 class="text-xl font-bold text-heading mb-1">{{ edu.school }}</h4>
-          <p class="text-primary font-medium mb-2">{{ edu.area || edu.period }}</p>
-          <div
-            class="text-text/80 text-sm prose dark:prose-invert max-w-none"
-            v-html="edu.description"
-          ></div>
-        </div>
+    <!-- Deployed Blueprints (Projects) -->
+    <section id="projects" class="mb-48">
+      <div class="max-w-7xl mx-auto px-8 mb-16">
+        <h2 class="text-label text-primary font-bold tracking-widest uppercase mb-4">Deployed Blueprints</h2>
+        <h3 class="text-4xl md:text-5xl font-headline font-bold text-on-surface">Mission Log</h3>
       </div>
-    </ModalComponent>
-
-    <!-- Awards Modal -->
-    <ModalComponent
-      :show="showAwardsModal"
-      title="Achievements & Awards"
-      @close="showAwardsModal = false"
-    >
-      <div class="space-y-4">
-        <div
-          v-for="award in resumeData.sections.awards.items"
-          :key="award.id"
-          class="p-6 rounded-xl bg-background border border-white/5"
-        >
-          <div class="flex flex-col sm:flex-row sm:items-baseline sm:justify-between mb-2">
-            <h4 class="text-xl font-bold text-heading">{{ award.title }}</h4>
-            <span class="text-xs font-mono text-text-mute">{{ award.date }}</span>
-          </div>
-          <div
-            class="text-text/80 text-sm prose dark:prose-invert max-w-none"
-            v-html="award.description"
-          ></div>
-          <a
-            v-if="award.website?.url"
-            :href="award.website.url"
-            target="_blank"
-            class="inline-block mt-3 text-primary text-xs hover:underline"
-          >
-            Proof/Link ↗
-          </a>
-        </div>
-      </div>
-    </ModalComponent>
-
-    <!-- Experience Section -->
-    <section id="experience" class="relative z-10 py-32 px-6 bg-background-soft/30">
-      <div class="max-w-5xl mx-auto">
-        <h3 class="text-sm font-bold tracking-wider text-primary uppercase mb-16 text-center">
-          Professional Experience
-        </h3>
-
-        <div class="space-y-12">
-          <div
-            v-for="job in experienceData"
-            :key="job.id"
-            class="relative pl-8 border-l-2 border-primary/30 hover:border-primary transition-colors group dark:text-white/80"
-          >
-            <div
-              class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-background border-2 border-primary group-hover:bg-primary transition-colors"
-            ></div>
-
-            <div class="flex flex-col sm:flex-row sm:items-baseline sm:justify-between mb-2">
-              <h4 class="text-xl font-bold text-heading">{{ job.role }}</h4>
-              <span class="text-sm font-mono text-text-mute">{{ job.period }}</span>
-            </div>
-            <h5 class="text-base text-lg font-medium text-text-mute mb-4">{{ job.company }}</h5>
-
-            <p v-if="job.summary" class="text-text/80 mb-4" v-html="job.summary"></p>
-            <ul class="list-disc list-inside space-y-2 text-text/80 marker:text-primary">
-              <li v-for="(point, index) in job.highlights" :key="index" v-html="point"></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Projects Section -->
-    <section class="relative z-10 py-32 px-6">
-      <div class="max-w-6xl mx-auto">
-        <h3 class="text-sm font-bold tracking-wider text-primary uppercase mb-12 text-center">
-          Featured Projects
-        </h3>
-
-        <div class="grid md:grid-cols-2 gap-8">
-          <div
-            v-for="project in projectsData"
-            :key="project.id"
-            class="group relative rounded-2xl overflow-hidden bg-background-soft border border-white/5 hover:border-primary/50 transition-all hover:-translate-y-1"
-          >
-            <div class="p-8">
-              <h4 class="text-xl font-bold text-heading mb-2">{{ project.title }}</h4>
-              <p class="text-sm text-primary mb-4">{{ project.subtitle }}</p>
-              <p class="text-text/80 mb-6" v-html="project.description"></p>
-              <div class="flex flex-wrap gap-2 text-xs font-mono text-text-mute">
-                <span v-for="tag in project.tags" :key="tag" class="px-2 py-1 rounded bg-white/5">
-                  {{ tag }}
-                </span>
+      
+      <div class="space-y-32">
+        <div v-for="(project, index) in projectsList" :key="project.id" class="flex flex-col lg:flex-row items-center gap-12 lg:gap-0">
+          
+          <template v-if="index % 2 === 0">
+            <div class="w-full lg:w-3/5 px-8 lg:px-0 lg:pl-32 order-2 lg:order-1">
+              <div class="glass-panel p-8 lg:p-12 rounded-3xl lg:rounded-r-none border-r-0 relative z-10 hover:ambient-glow transition-shadow duration-500">
+                <span class="text-primary font-label text-xs tracking-widest mb-4 block">PROJECT_0{{ index + 1 }}</span>
+                <h4 class="text-3xl lg:text-4xl font-headline font-bold mb-6">{{ project.name }}</h4>
+                <div class="text-on-surface-variant text-base lg:text-lg leading-relaxed mb-8 font-body prose-ul:list-disc prose-ul:ml-5" v-html="project.description"></div>
+                
+                <a v-if="project.website?.url" :href="project.website.url" target="_blank" class="flex items-center gap-2 text-primary font-bold hover:gap-4 transition-all cursor-pointer inline-flex">
+                  ACCESS REPOSITORY <span class="material-symbols-outlined">arrow_forward</span>
+                </a>
               </div>
             </div>
+            <div class="w-full lg:w-2/3 order-1 lg:order-2 px-8 lg:px-0">
+              <div class="aspect-video lg:aspect-auto lg:h-[500px] rounded-3xl lg:rounded-l-3xl overflow-hidden relative group border border-primary/20 bg-surface-container">
+                <!-- Fallback abstract matrix/code image for projects -->
+                <img alt="Project Overview" class="w-full h-full object-cover opacity-50 group-hover:opacity-100 group-hover:scale-110 transition-all duration-1000" src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1000&auto=format&fit=crop" />
+                <div class="absolute inset-0 bg-gradient-to-r from-surface via-transparent to-transparent"></div>
+              </div>
+            </div>
+          </template>
+
+          <template v-else>
+            <div class="w-full lg:w-2/3 px-8 lg:px-0">
+              <div class="aspect-video lg:aspect-auto lg:h-[500px] rounded-3xl lg:rounded-r-3xl overflow-hidden relative group border border-secondary/20 bg-surface-container">
+                <img alt="Project Overview" class="w-full h-full object-cover opacity-50 group-hover:opacity-100 group-hover:scale-110 transition-all duration-1000" src="https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1000&auto=format&fit=crop" />
+                <div class="absolute inset-0 bg-gradient-to-l from-surface via-transparent to-transparent"></div>
+              </div>
+            </div>
+            <div class="w-full lg:w-3/5 px-8 lg:px-0 lg:pr-32">
+              <div class="glass-panel p-8 lg:p-12 rounded-3xl lg:rounded-l-none border-l-0 relative z-10 hover:ambient-glow transition-shadow duration-500 border-secondary/20">
+                <span class="text-secondary font-label text-xs tracking-widest mb-4 block">PROJECT_0{{ index + 1 }}</span>
+                <h4 class="text-3xl lg:text-4xl font-headline font-bold mb-6">{{ project.name }}</h4>
+                <div class="text-on-surface-variant text-base lg:text-lg leading-relaxed mb-8 font-body prose-ul:list-disc prose-ul:ml-5" v-html="project.description"></div>
+                
+                <a v-if="project.website?.url" :href="project.website.url" target="_blank" class="flex items-center gap-2 text-secondary font-bold hover:gap-4 transition-all cursor-pointer inline-flex">
+                  ACCESS REPOSITORY <span class="material-symbols-outlined">arrow_forward</span>
+                </a>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+    </section>
+
+    <!-- System Cycles (Timeline) -->
+    <section id="timeline" class="max-w-5xl mx-auto px-8 mb-48 pt-10">
+      <div class="text-center mb-24 relative">
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-primary/5 rounded-full blur-[80px]"></div>
+        <h2 class="text-label text-primary font-bold tracking-widest uppercase mb-4 relative z-10">System Cycles</h2>
+        <h3 class="text-4xl md:text-5xl font-headline font-bold text-on-surface relative z-10">Timeline of Evolution</h3>
+      </div>
+      
+      <div class="relative border-l border-primary/20 pl-8 md:pl-16 space-y-24">
+        <div v-for="(job, index) in experienceList" :key="job.id" class="relative group">
+          <div class="absolute -left-[41px] md:-left-[73px] top-0 w-5 h-5 rounded-full shadow-[0_0_15px_currentColor] transition-transform group-hover:scale-125" :class="`bg-${getColors(index)} text-${getColors(index)}`"></div>
+          <div>
+            <span class="font-label text-sm tracking-widest mb-2 block uppercase" :class="`text-${getColors(index)}`">{{ job.period }}</span>
+            <h4 class="text-2xl font-headline font-bold mb-1">{{ job.position }}</h4>
+            <h5 class="text-lg text-on-surface-variant font-bold mb-4">{{ job.company }}</h5>
+            <div class="text-on-surface-variant font-body prose-ul:list-disc prose-ul:ml-5 prose-ul:mt-2 text-base leading-relaxed" v-html="job.description"></div>
           </div>
         </div>
       </div>
     </section>
-    <!-- Contact Section -->
-    <section id="contact" class="relative z-10 py-32 px-6 text-center">
-      <div class="max-w-2xl mx-auto">
-        <h2 class="text-4xl md:text-5xl font-bold text-heading mb-8">Ready to collaborate?</h2>
-        <p class="text-xl text-text-mute mb-12">
-          I'm currently based in Noida, India and open to opportunities.
+
+    <!-- Education & Achievements (Appended to match resume) -->
+    <section id="systems" class="max-w-7xl mx-auto px-8 mb-32 grid md:grid-cols-2 gap-12">
+      <!-- Education -->
+      <div>
+        <h2 class="text-label text-primary font-bold tracking-widest uppercase mb-8">Base Knowledge</h2>
+        <div class="space-y-6">
+          <div v-for="edu in resumeData.sections.education.items" :key="edu.id" class="glass-panel p-6 rounded-2xl hover:ambient-glow transition-all duration-300">
+            <h4 class="text-xl font-headline font-bold mb-1">{{ edu.school }}</h4>
+            <div class="text-sm font-label text-primary mb-3">{{ edu.area || edu.period }}</div>
+            <div class="text-on-surface-variant text-sm" v-html="edu.description"></div>
+          </div>
+        </div>
+      </div>
+      <!-- Awards -->
+      <div>
+        <h2 class="text-label text-primary font-bold tracking-widest uppercase mb-8">Achievements</h2>
+        <div class="space-y-6">
+          <div v-for="award in resumeData.sections.awards.items" :key="award.id" class="glass-panel p-6 rounded-2xl hover:ambient-glow transition-all duration-300">
+            <div class="flex justify-between items-start gap-4">
+              <h4 class="text-xl font-headline font-bold mb-3">{{ award.title }}</h4>
+            </div>
+            <div class="text-on-surface-variant text-sm mb-3" v-html="award.description"></div>
+            <a v-if="award.website?.url" :href="award.website.url" target="_blank" class="text-label-sm text-primary hover:text-primary-container inline-flex items-center gap-1">
+              View Proof <span class="material-symbols-outlined text-sm">open_in_new</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Footer -->
+    <section class="max-w-7xl mx-auto px-8 mb-32">
+      <div class="glass-panel rounded-3xl p-16 text-center relative overflow-hidden ring-1 ring-primary/20">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-[80px]"></div>
+        <div class="absolute bottom-0 left-0 w-64 h-64 bg-secondary/10 rounded-full blur-[80px]"></div>
+        <h3 class="text-4xl md:text-6xl font-headline font-bold mb-8 relative z-10">Ready to bridge the void?</h3>
+        <p class="text-xl text-on-surface-variant mb-12 max-w-2xl mx-auto font-body relative z-10">
+          Open to collaborative opportunities and robust system engineering challenges. Let's build what hasn't been imagined yet.
         </p>
-        <div class="flex justify-center gap-6">
-          <a
-            :href="`mailto:${profileData.email}`"
-            class="inline-flex items-center gap-2 px-10 py-4 rounded-full bg-heading text-background font-bold text-lg hover:scale-105 transition-transform"
-          >
-            Email Me
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-              ></path>
-            </svg>
+        <div class="flex flex-col sm:flex-row justify-center gap-6 relative z-10">
+          <a :href="`mailto:${resumeData.basics.email}`" class="px-10 py-5 aurora-glow text-surface font-bold rounded-2xl hover:scale-105 transition-all text-lg shadow-[0_10px_30px_rgba(143,245,255,0.2)] cursor-pointer inline-block">
+            Establish Connection
           </a>
-          <a
-            :href="profileData.linkedin"
-            target="_blank"
-            rel="noopener"
-            class="inline-flex items-center gap-2 px-10 py-4 rounded-full border border-white/10 bg-background-soft text-heading font-bold text-lg hover:bg-white/5 transition-colors"
-          >
-            LinkedIn
-          </a>
-          <a
-            :href="profileData.github"
-            target="_blank"
-            rel="noopener"
-            class="inline-flex items-center gap-2 px-10 py-4 rounded-full border border-white/10 bg-background-soft text-heading font-bold text-lg hover:bg-white/5 transition-colors"
-          >
-            GitHub
+          <a :href="resumeData.basics.customFields.find(f => f.network === 'LinkedIn' || f.text === 'shrish')?.link" target="_blank" class="px-10 py-5 bg-surface-container-highest/40 text-primary border border-primary/20 font-bold rounded-2xl hover:bg-surface-container transition-all text-lg cursor-pointer inline-block">
+            Access LinkedIn
           </a>
         </div>
       </div>
     </section>
 
-    <!-- Footer -->
-    <footer
-      class="py-8 text-center text-sm text-text-mute border-t border-white/5 bg-background-soft/20 backdrop-blur-sm"
-    >
-      <p>&copy; 2026 Shrish Gupta. Built with Vue 3 & Tailwind.</p>
-    </footer>
+    <!-- Floating UI Items -->
+    <div class="fixed bottom-8 right-8 z-50">
+      <button class="w-16 h-16 rounded-full aurora-glow flex items-center justify-center shadow-[0_0_30px_rgba(143,245,255,0.6)] hover:scale-110 transition-transform cursor-pointer">
+        <span class="material-symbols-outlined text-surface text-3xl">smart_toy</span>
+      </button>
+    </div>
+
+    <!-- Modals -->
+    <TechnicalModal 
+      :is-open="showSkillModal" 
+      v-bind="activeSkill" 
+      @close="showSkillModal = false" 
+    />
   </main>
 </template>

@@ -42,5 +42,3 @@ export const InformationCards = {
   LANGUAGES: 'Languages',
   FRAMEWORKS: 'Frameworks',
 }
-
-export type InformationCardType = (typeof InformationCards)[keyof typeof InformationCards]

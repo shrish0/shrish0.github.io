@@ -1,17 +1,12 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import { SECTIONS } from '@/utils/constants'
-import profileData from '@/data/profile.json'
-import { scrollToSection } from '@/utils/HelperMethod'
-import IconSun from '@/assets/images/icon-sun.svg?component'
-import IconMoon from '@/assets/images/icon-moon.svg?component'
+import resumeData from '../../public/resume.json'
+import type { CustomField } from '@/utils/types'
 
 const isScrolled = ref(false)
+const githubUrl = resumeData.basics.customFields.find((f: CustomField) => f.icon === 'github-logo' || f.text === 'shrish0')?.link || 'https://github.com/shrish0'
+const linkedinUrl = resumeData.basics.customFields.find((f: CustomField) => f.icon === 'linkedin-logo' || f.text === 'shrish')?.link || 'https://linkedin.com/in/shrish0'
 const isDark = ref(true)
-
-const checkScroll = () => {
-  isScrolled.value = window.scrollY > 20
-}
 
 const toggleTheme = () => {
   isDark.value = !isDark.value
@@ -26,10 +21,19 @@ const toggleTheme = () => {
   }
 }
 
+const checkScroll = () => {
+  isScrolled.value = window.scrollY > 20
+}
+
+const handleNavClick = (id: string) => {
+  const el = document.getElementById(id)
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth' })
+  }
+}
+
 onMounted(() => {
   window.addEventListener('scroll', checkScroll)
-
-  // Check saved theme
   const savedTheme = localStorage.getItem('theme')
   if (savedTheme === 'light') {
     isDark.value = false
@@ -42,67 +46,37 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('scroll', checkScroll)
 })
-
-const navLinks = [
-  { name: 'Home', id: SECTIONS.HOME },
-  { name: 'About', id: SECTIONS.ABOUT },
-  { name: 'Experience', id: SECTIONS.EXPERIENCE },
-  { name: 'Contact', id: SECTIONS.CONTACT },
-]
 </script>
 
 <template>
   <nav
-    class="fixed top-0 left-0 w-full z-50 transition-all duration-300 border-b border-transparent"
-    :class="[
-      isScrolled
-        ? 'bg-background/80 backdrop-blur-md border-white/5 py-3 shadow-lg'
-        : 'bg-transparent py-5',
-    ]"
+    class="fixed top-0 w-full z-50 transition-all duration-300"
+    :class="[isScrolled ? 'bg-surface/80 backdrop-blur-xl shadow-[0_0_40px_rgba(143,245,255,0.06)] py-4' : 'bg-transparent py-6']"
   >
-    <div class="max-w-7xl mx-auto px-6 flex items-center justify-between">
-      <!-- Logo -->
-      <a
-        href="#"
-        @click.prevent="scrollToSection(SECTIONS.HOME)"
-        class="text-2xl font-bold bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent hover:opacity-80 transition-opacity"
-      >
-        {{ profileData.name }}
-      </a>
+    <div class="flex justify-between items-center px-8 max-w-7xl mx-auto font-headline tracking-tight">
+      <a href="#" @click.prevent="handleNavClick('home')" class="text-2xl font-bold tracking-tighter text-primary uppercase">ARCHITECT_OS</a>
 
-      <!-- Desktop Links -->
-      <ul class="hidden md:flex gap-8 items-center">
-        <li v-for="link in navLinks" :key="link.name">
-          <a
-            :href="`#${link.id}`"
-            @click.prevent="scrollToSection(link.id)"
-            class="text-sm font-medium text-text-mute hover:text-primary transition-colors hover:shadow-primary/50"
-          >
-            {{ link.name }}
-          </a>
-        </li>
-      </ul>
+      <div class="hidden md:flex items-center gap-8 text-label font-bold">
+        <a class="text-on-surface-variant hover:text-primary transition-colors cursor-pointer" @click.prevent="handleNavClick('intelligence')">Intelligence</a>
+        <a class="text-on-surface-variant hover:text-primary transition-colors cursor-pointer" @click.prevent="handleNavClick('projects')">Projects</a>
+        <a class="text-on-surface-variant hover:text-primary transition-colors cursor-pointer" @click.prevent="handleNavClick('timeline')">Timeline</a>
+        <a class="text-on-surface-variant hover:text-primary transition-colors cursor-pointer" @click.prevent="handleNavClick('systems')">Systems Achievements</a>
+      </div>
 
-      <div class="hidden md:flex items-center gap-4">
+      <div class="flex items-center gap-4 md:gap-6">
         <!-- Theme Toggle -->
-        <button
-          @click="toggleTheme"
-          class="p-2 rounded-full hover:bg-white/10 text-heading transition-colors"
-          title="Toggle Theme"
-        >
-          <!-- Sun Icon -->
-          <IconSun v-if="!isDark" class="h-5 w-5" />
-          <!-- Moon Icon -->
-          <IconMoon v-else class="h-5 w-5" />
+        <button @click="toggleTheme" class="p-2 rounded-full hover:bg-surface-container/50 text-on-surface-variant hover:text-primary transition-all duration-300 hidden sm:flex items-center justify-center">
+          <span class="material-symbols-outlined text-[20px]">{{ isDark ? 'dark_mode' : 'light_mode' }}</span>
         </button>
 
-        <!-- Resume Button -->
-        <a
-          href="/Resume.pdf"
-          target="_blank"
-          class="px-5 py-2 text-xs font-semibold rounded-full bg-white/5 hover:bg-white/10 border border-white/10 transition-all text-heading"
-        >
-          Resume
+        <a :href="githubUrl" target="_blank" class="hidden sm:flex items-center group cursor-pointer" title="GitHub">
+          <span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">terminal</span>
+        </a>
+
+        <a :href="linkedinUrl" target="_blank" class="flex items-center group inline-block">
+          <button class="bg-primary text-surface px-6 py-2 rounded-lg font-bold group-hover:scale-105 transition-all shadow-[0_0_20px_rgba(143,245,255,0.3)] cursor-pointer">
+            Connect
+          </button>
         </a>
       </div>
     </div>
