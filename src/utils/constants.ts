@@ -5,7 +5,7 @@ export const SECTIONS = {
   CONTACT: 'contact',
 }
 
-export const SKILL_ICONS: Record<string, string>  = {
+export const SKILL_ICONS: Record<string, string> = {
   javascript: 'logos:javascript',
   react: 'logos:react',
   vue: 'logos:vue',
@@ -34,4 +34,8 @@ export const InformationCards = {
   PROJECTS: 'Projects',
   AWARDS: 'Awards',
   HOBBIES: 'Hobbies',
+  LANGUAGES: 'Languages',
+  FRAMEWORKS: 'Frameworks',
 }
+
+export type InformationCardType = (typeof InformationCards)[keyof typeof InformationCards]
