@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, onUnmounted } from 'vue'
 import profileData from '@/data/profile.json'
-import { InformationCardType, InformationCards } from '@/utils/constants'
+import type { InformationCardType } from '@/utils/constants'
 import experienceData from '@/data/experience.json'
 import projectsData from '@/data/projects.json'
 import skillsData from '@/data/skills.json'
@@ -71,7 +71,9 @@ const handleScrollAction = () => {
   }
 }
 
-watch(showBio, () => {
+watch(
+  showBio,
+  () => {
     if (showBio.value) {
       slicedBioData.value = profileData.bio
     } else {
@@ -80,8 +82,6 @@ watch(showBio, () => {
   },
   { immediate: true },
 )
-
-
 
 onMounted(() => {
   typeText()
@@ -234,21 +234,24 @@ onUnmounted(() => {
 
             <!-- Education & Achievements Cards -->
             <div class="grid grid-cols-2 gap-4 mt-4">
-               <InformationCard
-                 :title="profileData.education.title"
-                 :subtitle="profileData.education.degree"
-                 :details="[profileData.education.year, profileData.education.grade]"
-                 class="cursor-pointer"
-                 @click="showEducationModal = true"
-               />
+              <InformationCard
+                :title="profileData.education.title"
+                :subtitle="profileData.education.degree"
+                :details="[profileData.education.year, profileData.education.grade]"
+                class="cursor-pointer"
+                @click="showEducationModal = true"
+              />
 
-               <InformationCard
-                 title="Achievements"
-                 :subtitle="profileData.achievements?.[0]?.title || ''"
-                 :details="[profileData.achievements?.[0]?.count || '', profileData.achievements?.[0]?.level || '']"
-                 class="cursor-pointer"
-                 @click="showAwardsModal = true"
-               />
+              <InformationCard
+                title="Achievements"
+                :subtitle="profileData.achievements?.[0]?.title || ''"
+                :details="[
+                  profileData.achievements?.[0]?.count || '',
+                  profileData.achievements?.[0]?.level || '',
+                ]"
+                class="cursor-pointer"
+                @click="showAwardsModal = true"
+              />
             </div>
           </div>
         </div>
@@ -261,25 +264,36 @@ onUnmounted(() => {
     </ModalComponent>
 
     <!-- Education Modal -->
-    <ModalComponent :show="showEducationModal" title="Education History" @close="showEducationModal = false">
+    <ModalComponent
+      :show="showEducationModal"
+      title="Education History"
+      @close="showEducationModal = false"
+    >
       <div class="space-y-4">
-        <div 
-          v-for="edu in resumeData.sections.education.items" 
+        <div
+          v-for="edu in resumeData.sections.education.items"
           :key="edu.id"
           class="p-6 rounded-xl bg-background border border-white/5"
         >
           <h4 class="text-xl font-bold text-heading mb-1">{{ edu.school }}</h4>
           <p class="text-primary font-medium mb-2">{{ edu.area || edu.period }}</p>
-          <div class="text-text/80 text-sm prose dark:prose-invert max-w-none" v-html="edu.description"></div>
+          <div
+            class="text-text/80 text-sm prose dark:prose-invert max-w-none"
+            v-html="edu.description"
+          ></div>
         </div>
       </div>
     </ModalComponent>
 
     <!-- Awards Modal -->
-    <ModalComponent :show="showAwardsModal" title="Achievements & Awards" @close="showAwardsModal = false">
+    <ModalComponent
+      :show="showAwardsModal"
+      title="Achievements & Awards"
+      @close="showAwardsModal = false"
+    >
       <div class="space-y-4">
-        <div 
-          v-for="award in resumeData.sections.awards.items" 
+        <div
+          v-for="award in resumeData.sections.awards.items"
           :key="award.id"
           class="p-6 rounded-xl bg-background border border-white/5"
         >
@@ -287,11 +301,14 @@ onUnmounted(() => {
             <h4 class="text-xl font-bold text-heading">{{ award.title }}</h4>
             <span class="text-xs font-mono text-text-mute">{{ award.date }}</span>
           </div>
-          <div class="text-text/80 text-sm prose dark:prose-invert max-w-none" v-html="award.description"></div>
-          <a 
-            v-if="award.website?.url" 
-            :href="award.website.url" 
-            target="_blank" 
+          <div
+            class="text-text/80 text-sm prose dark:prose-invert max-w-none"
+            v-html="award.description"
+          ></div>
+          <a
+            v-if="award.website?.url"
+            :href="award.website.url"
+            target="_blank"
             class="inline-block mt-3 text-primary text-xs hover:underline"
           >
             Proof/Link ↗
