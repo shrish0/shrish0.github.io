@@ -11,6 +11,10 @@ export default defineConfig({
   server: {
     port: 5000,
     host: true,
+    allowedHosts: [
+      'semimat-otto-undilatorily.ngrok-free.dev',
+      'shrish0.github.io'
+    ],
   },
   resolve: {
     alias: {

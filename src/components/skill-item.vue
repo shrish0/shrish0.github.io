@@ -8,10 +8,8 @@ defineProps<{
 
 const getIcon = (name: string): string => {
   const lowercaseName = name.toLowerCase().trim()
-  // 1. Check exact match (lowercase)
   if (SKILL_ICONS[lowercaseName]) return SKILL_ICONS[lowercaseName]
 
-  // 2. Check "cleaned" match (no dots, no 'js')
   const cleanedKey = lowercaseName.replace(/\./g, '').replace(/js/g, '').trim()
   if (SKILL_ICONS[cleanedKey]) return SKILL_ICONS[cleanedKey]
 
@@ -20,22 +18,30 @@ const getIcon = (name: string): string => {
 </script>
 
 <template>
-  <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-    <div 
-      v-for="skill in skills" 
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div
+      v-for="skill in skills"
       :key="skill.name"
-      class="flex flex-col items-center p-4 rounded-lg bg-background-soft border border-white/5 hover:border-primary/50 transition-colors"
+      class="glass-panel p-8 rounded-xl cursor-pointer hover:scale-[1.03] transition-all group border-primary/5 hover:ambient-glow"
     >
-      <Icon 
-        v-if="getIcon(skill.name)" 
-        :icon="getIcon(skill.name)" 
-        width="40" 
-        height="40"
-        class="mb-3" 
-      />
-      <span v-else class="text-2xl mb-2">💻</span>
-
-      <h3 class="font-medium text-heading">{{ skill.name }}</h3>
+      <div class="w-12 h-12 flex items-center justify-center rounded-lg bg-primary/10 text-primary mb-6 group-hover:bg-primary group-hover:text-surface transition-colors">
+        <Icon
+          v-if="getIcon(skill.name)"
+          :icon="getIcon(skill.name)"
+          width="24"
+          height="24"
+        />
+        <span v-else class="material-symbols-outlined">architecture</span>
+      </div>
+      
+      <h4 class="text-xl font-headline font-bold mb-3 text-heading">{{ skill.name }}</h4>
+      <p class="text-sm text-on-surface-variant font-body mb-6 line-clamp-2">
+        {{ (skill as any).description || 'Core expertise node with high-performance output capabilities.' }}
+      </p>
+      
+      <div class="text-xs font-label text-primary/60 tracking-widest uppercase">
+        Status: Optimal
+      </div>
     </div>
   </div>
 </template>

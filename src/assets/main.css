@@ -1,1 +1,244 @@
-@import './base.css';
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Manrope:wght@300;400;500;600;700&display=swap');
+
+
+/* ===========================================
+ * THE NOCTURNAL ARCHITECT — Design Token System
+ * A high-end editorial portfolio design system.
+ * =========================================== */
+
+@theme {
+  /* --- Surface Hierarchy: "Obsidian Glass" Layers --- */
+  --color-surface: #0b1326;
+  --color-surface-dim: #070d1c;
+  --color-surface-container-lowest: #0d1730;
+  --color-surface-container-low: #111d3a;
+  --color-surface-container: #162347;
+  --color-surface-container-high: #1b2a54;
+  --color-surface-container-highest: #213161;
+  --color-surface-bright: #253a6e;
+
+  /* --- Primary Accent: Electric Sky Blue --- */
+  --color-primary: #8ed5ff;
+  --color-primary-container: #38bdf8;
+  --color-primary-dim: #1d8bc7;
+
+  /* --- Secondary Accent: Soft Violet --- */
+  --color-secondary: #ddb8ff;
+  --color-secondary-container: #a855f7;
+
+  /* --- Text Hierarchy --- */
+  --color-heading: #f0f6ff;
+  --color-on-surface: #b8c9dd;
+  --color-on-surface-variant: #7b8fad;
+
+  /* --- Structural --- */
+  --color-outline-variant: #2a3f6e;
+
+  /* --- Typography --- */
+  --font-sans: "Manrope", system-ui, -apple-system, sans-serif;
+  --font-headline: "Space Grotesk", sans-serif;
+  --font-label: "Space Grotesk", sans-serif;
+  --font-body: "Manrope", sans-serif;
+  --font-mono: ui-monospace, "Cascadia Code", "Fira Code", "Consolas", monospace;
+
+  /* --- Animation Tokens --- */
+  --animate-fade-up: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-fade-in: fade-in 0.6s ease-out both;
+  --animate-glow-pulse: glow-pulse 4s ease-in-out infinite;
+  --animate-float: float 8s ease-in-out infinite;
+  --animate-blink: blink 1s step-end infinite;
+}
+
+/* ===========================================
+ * Keyframes
+ * =========================================== */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.15; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(1.08); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  33% { transform: translateY(-12px) rotate(1deg); }
+  66% { transform: translateY(6px) rotate(-1deg); }
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* ===========================================
+ * Base Layer
+ * =========================================== */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: var(--color-surface);
+    color: var(--color-on-surface);
+    font-family: var(--font-sans);
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background: var(--color-primary-container);
+    color: var(--color-surface);
+  }
+
+  /* Light Theme Overrides */
+  html.light {
+    --color-surface: #f8fafc;
+    --color-surface-dim: #f1f5f9;
+    --color-surface-container-lowest: #ffffff;
+    --color-surface-container-low: #f1f5f9;
+    --color-surface-container: #e2e8f0;
+    --color-surface-container-high: #cbd5e1;
+    --color-surface-container-highest: #94a3b8;
+    --color-surface-bright: #ffffff;
+    --color-primary: #0284c7;
+    --color-primary-container: #0ea5e9;
+    --color-primary-dim: #075985;
+    --color-secondary: #7c3aed;
+    --color-secondary-container: #8b5cf6;
+    --color-heading: #0f172a;
+    --color-on-surface: #334155;
+    --color-on-surface-variant: #64748b;
+    --color-outline-variant: #cbd5e1;
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: var(--color-surface-dim); }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-outline-variant);
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary-container);
+  }
+}
+
+/* ===========================================
+ * Component Layer
+ * =========================================== */
+@layer components {
+  /* Glassmorphism Card */
+  .glass-surface {
+    background: color-mix(in srgb, var(--color-surface-container) 70%, transparent);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  /* Stitch Design System Equivalents */
+  .glass-panel {
+    background: color-mix(in srgb, var(--color-surface-container) 60%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid color-mix(in srgb, var(--color-outline-variant) 50%, transparent);
+  }
+  
+  .aurora-glow {
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-container));
+  }
+  
+  .text-glow {
+    text-shadow: 0 0 15px color-mix(in srgb, var(--color-primary-container) 50%, transparent);
+  }
+
+  /* Ambient Glow (replaces drop shadows) */
+  .ambient-glow {
+    box-shadow: 0 0 40px color-mix(in srgb, var(--color-primary) 12%, transparent);
+  }
+  .ambient-glow-strong {
+    box-shadow: 0 0 60px color-mix(in srgb, var(--color-primary) 20%, transparent);
+  }
+
+  /* Ghost Border (the only allowed border type per design.md) */
+  .ghost-border {
+    border: 1px solid color-mix(in srgb, var(--color-outline-variant) 15%, transparent);
+  }
+  .ghost-border-primary {
+    border: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
+  }
+
+  /* Signature Gradient (135deg primary to primary-container) */
+  .gradient-primary {
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-container));
+  }
+  .gradient-text {
+    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Scroll-triggered Reveal Animation */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Stagger delays for reveal children */
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+  .reveal-delay-5 { transition-delay: 0.5s; }
+}
+
+/* ===========================================
+ * Utility Layer — Typography Scales
+ * =========================================== */
+@layer utilities {
+  .text-display-lg {
+    font-size: clamp(3rem, 6vw, 5rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: var(--color-heading);
+  }
+  .text-display-sm {
+    font-size: clamp(1.5rem, 3vw, 2.5rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    color: var(--color-heading);
+  }
+  .text-headline-lg {
+    font-size: clamp(1.25rem, 2vw, 1.75rem);
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--color-heading);
+  }
+  .text-label-md {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+  .text-label-sm {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+}
