@@ -23,7 +23,13 @@ const showSkillModal = ref(false)
 const showEducationModal = ref(false)
 const showAwardsModal = ref(false)
 const modalTitle = ref('')
-const modalSkills = ref<any[]>([])
+
+type Skill = {
+  name: string
+  colorClass: string
+}
+
+const modalSkills = ref<Skill[]>([])
 
 const openSkillModal = (type: InformationCardType) => {
   if (type === 'languages') {

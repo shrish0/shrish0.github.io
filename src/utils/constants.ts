@@ -15,10 +15,15 @@ export const SKILL_ICONS: Record<string, string> = {
   git: 'logos:git-icon',
   typescript: 'logos:typescript-icon',
   'c#': 'logos:c-sharp',
-  '.net': 'logos:dotnet',
+  net: 'logos:dotnet',
   java: 'logos:java',
   python: 'logos:python',
   sql: 'logos:postgresql',
+  fastapi: 'logos:fastapi-icon',
+  django: 'logos:django-icon',
+  redis: 'logos:redis',
+  mongodb: 'logos:mongodb-icon',
+  'aspnet mvc': 'logos:dotnet',
 }
 export const SOCIAL_LINKS = {
   GITHUB: '',
