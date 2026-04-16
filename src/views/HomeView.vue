@@ -168,12 +168,12 @@ const getColors = (index: number) => {
         
         <div ref="modulesContainer" class="flex overflow-x-auto gap-6 py-10 -my-10 px-4 -mx-4 snap-x snap-mandatory scroll-smooth" style="scrollbar-width: none;">
           <div v-for="skill in skillsList" :key="skill.name" @click="openSkillModule(skill.config)" class="glass-panel p-8 rounded-xl cursor-pointer hover:scale-[1.03] relative z-0 hover:z-10 transition-all border-primary/5 hover:ambient-glow min-w-[280px] md:min-w-[320px] snap-center shrink-0 group">
-            <div class="w-12 h-12 flex items-center justify-center rounded-lg mb-6 transition-colors group-hover:text-surface" :class="[skill.style.bg, skill.style.text, skill.style.groupBg]">
+            <div class="w-12 h-12 flex items-center justify-center rounded-lg mb-6 transition-colors group-hover:text-surface" :class="[skill.style?.bg, skill.style?.text, skill.style?.groupBg]">
               <span class="material-symbols-outlined">{{ skill.icon }}</span>
             </div>
             <h4 class="text-xl font-headline font-bold mb-3">{{ skill.name }}</h4>
             <p class="text-sm text-on-surface-variant font-body mb-6 truncate" :title="skill.proficiency">{{ skill.proficiency }}</p>
-            <div class="text-xs font-label tracking-widest uppercase opacity-80" :class="skill.style.text">Level: {{ skill.level }} / 5</div>
+            <div class="text-xs font-label tracking-widest uppercase opacity-80" :class="skill.style?.text">Level: {{ skill.level }} / 5</div>
           </div>
         </div>
 
