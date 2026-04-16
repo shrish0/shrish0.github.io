@@ -86,7 +86,7 @@ const openSkillModule = (config: any) => {
 }
 
 const modulesContainer = ref<HTMLElement | null>(null)
-const scrollModules = (direction: ScrollModuleDirection) => {
+const scrollModules = (direction: ScrollModuleDirectionType) => {
   if (modulesContainer.value) {
     const scrollAmount = 350
     modulesContainer.value.scrollBy({ left: direction === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' })
