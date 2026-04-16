@@ -1,11 +1,25 @@
 {
   "name": "Shrish Gupta",
   "initials": "Shrish.",
-  "role": "Associate Software Engineer",
-  "bio": "I build enterprise-grade applications with a focus on real-time systems, scalable architecture, and intuitive user experiences.",
+  "role": "Software Development Engineer 1",
+  "bio": "Backend-focused engineer with experience in microservices and event-driven systems. Skilled in FastAPI, REST APIs, asynchronous processing, and distributed backend workflows. Built scalable backend services and real-time applications in production environments with a strong foundation in system design and enterprise software delivery.",
   "email": "shrishgupta1234@gmail.com",
-  "linkedin": "https://linkedin.com/in/shrish-gupta",
+  "linkedin": "https://www.linkedin.com/in/shrishgupta",
+  "github": "https://github.com/shrish0",
   "resumeUrl": "/Resume.pdf",
-  "status": "Available for hire",
-  "typewriterText": "Hi, I'm Shrish."
+  "status": "Backend Engineer | Open to opportunities",
+  "typewriterText": "Hi, I'm Shrish.",
+  "education": {
+    "title": "Education",
+    "degree": "B.Tech in Computer Science",
+    "year": "2021-2025",
+    "grade": "CGPA: 8.44"
+  },
+  "achievements": [
+    {
+      "title": "Hackathon Wins",
+      "count": "2+",
+      "level": "National Level"
+    }
+  ]
 }

@@ -1,14 +1,15 @@
 [
   {
     "id": 1,
-    "role": "Associate Software Engineer",
+    "role": "Software Development Engineer 1",
     "company": "Innostax Tech LLC",
-    "period": "Sep 2025 - Present",
-    "summary": "Working on <strong>LISA</strong>, a major insurance domain application.",
+    "period": "Sep 2025 - Apr 2026",
+    "summary": "Worked on backend systems across microservices and real-time enterprise workflows, with project details kept client-agnostic.",
     "highlights": [
-      "Developing frontend features using <strong>Vue.js with TypeScript</strong>.",
-      "Implementing real-time functionalities (live agent status, ring groups) using <strong>SignalR</strong>.",
-      "Integrating <strong>Redis caching</strong> and <strong>Twilio SMS</strong> services for enhanced performance."
+      "Developed a <strong>FastAPI-based microservice</strong> to orchestrate distributed document workflows.",
+      "Built event-driven backend pipelines for extraction, validation, and report generation using asynchronous processing.",
+      "Implemented secure upload and cloud-processing flows using pre-signed URLs, queues, and serverless components.",
+      "Contributed to a real-time communication and workflow platform with WebSocket-based updates and backend performance optimizations."
     ]
   },
   {

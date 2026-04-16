@@ -1,10 +1,25 @@
-export const TABS = {
+export const SECTIONS = {
   HOME: 'home',
   ABOUT: 'about',
   EXPERIENCE: 'experience',
   CONTACT: 'contact',
 }
 
+export const SKILL_ICONS: Record<string, string>  = {
+  javascript: 'logos:javascript',
+  react: 'logos:react',
+  vue: 'logos:vue',
+  html: 'logos:html-5',
+  css: 'logos:css-3',
+  nodejs: 'logos:nodejs-icon',
+  git: 'logos:git-icon',
+  typescript: 'logos:typescript-icon',
+  'c#': 'logos:c-sharp',
+  '.net': 'logos:dotnet',
+  java: 'logos:java',
+  python: 'logos:python',
+  sql: 'logos:postgresql',
+}
 export const SOCIAL_LINKS = {
   GITHUB: '',
   LINKEDIN: '',

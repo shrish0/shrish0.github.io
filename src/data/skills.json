@@ -1,11 +1,23 @@
 {
-  "core": [
-    { "name": "Vue.js", "colorClass": "text-primary" },
+  "languages": [
+    { "name": "Python", "colorClass": "text-green-400" },
     { "name": "TypeScript", "colorClass": "text-blue-400" },
-    { "name": ".NET / C#", "colorClass": "text-purple-400" },
-    { "name": "SignalR", "colorClass": "text-red-400" },
-    { "name": "Redis", "colorClass": "text-red-500" },
-    { "name": "SQL Server", "colorClass": "text-orange-400" }
+    { "name": "C#", "colorClass": "text-purple-500" },
+    { "name": "Java", "colorClass": "text-red-500" },
+    { "name": "SQL", "colorClass": "text-yellow-600" },
+    { "name": "JavaScript", "colorClass": "text-yellow-400" },
+    { "name": "HTML", "colorClass": "text-orange-500" },
+    { "name": "CSS", "colorClass": "text-blue-500" }
+  ],
+  "frameworks": [
+    { "name": "FastAPI", "colorClass": "text-green-500" },
+    { "name": "Django", "colorClass": "text-green-600" },
+    { "name": "ASP.NET MVC", "colorClass": "text-purple-600" },
+    { "name": ".NET", "colorClass": "text-purple-500" },
+    { "name": "Vue.js", "colorClass": "text-green-400" },
+    { "name": "React", "colorClass": "text-blue-400" },
+    { "name": "Redis", "colorClass": "text-red-400" },
+    { "name": "MongoDB", "colorClass": "text-emerald-500" }
   ],
   "stats": [
     { "label": "CGPA", "value": "8.44", "subtext": "B.Tech (CS)" },

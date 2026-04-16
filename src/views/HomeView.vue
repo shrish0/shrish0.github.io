@@ -5,12 +5,32 @@ import experienceData from '@/data/experience.json'
 import projectsData from '@/data/projects.json'
 import skillsData from '@/data/skills.json'
 
+import ModalComponent from '@/components/modal-component.vue'
+import SkillItem from '@/components/skill-item.vue'
+import InformationCard from '@/components/information-card.vue'
+
 const textToType = profileData.typewriterText
 const displayedText = ref('')
 const isTyping = ref(true)
 const isAtBottom = ref(false)
-const showMore = ref(false)
-const filteredSkills = ref()
+const showBio = ref(false)
+const slicedBioData = ref()
+
+// Modal State
+const showSkillModal = ref(false)
+const modalTitle = ref('')
+const modalSkills = ref<any[]>([])
+
+const openSkillModal = (type: 'languages' | 'frameworks') => {
+  if (type === 'languages') {
+    modalTitle.value = 'Languages'
+    modalSkills.value = skillsData.languages
+  } else {
+    modalTitle.value = 'Frameworks & Tools'
+    modalSkills.value = skillsData.frameworks
+  }
+  showSkillModal.value = true
+}
 
 const typeText = async () => {
   // Initial pause
@@ -47,13 +67,17 @@ const handleScrollAction = () => {
   }
 }
 
-watch(showMore, (newVal) => {
-  if (newVal) {
-    filteredSkills.value = skillsData.core
-  } else {
-    filteredSkills.value = skillsData.core.slice(0, 3)
-  }
-}, { immediate: true })
+watch(showBio, () => {
+    if (showBio.value) {
+      slicedBioData.value = profileData.bio
+    } else {
+      slicedBioData.value = profileData.bio.slice(0, 150) + '...'
+    }
+  },
+  { immediate: true },
+)
+
+
 
 onMounted(() => {
   typeText()
@@ -138,6 +162,14 @@ onUnmounted(() => {
             See My Work
           </a>
           <a
+            :href="profileData.resumeUrl"
+            target="_blank"
+            rel="noopener"
+            class="px-8 py-3.5 rounded-full border border-primary/30 bg-primary/5 text-primary font-semibold hover:bg-primary hover:text-white transition-all"
+          >
+            View Resume
+          </a>
+          <a
             :href="`mailto:${profileData.email}`"
             class="px-8 py-3.5 rounded-full border border-white/10 bg-white/5 text-heading font-semibold hover:bg-white/10 hover:border-white/20 transition-all"
           >
@@ -152,7 +184,7 @@ onUnmounted(() => {
       <div class="max-w-6xl mx-auto">
         <h3 class="text-sm font-bold tracking-wider text-primary uppercase mb-2">About Me</h3>
         <h4 class="text-3xl md:text-4xl font-bold text-heading mb-12">
-          Building scalable <span class="text-primary">enterprise solutions</span>.
+          Building scalable <span class="text-primary">backend systems</span>.
         </h4>
 
         <div class="grid md:grid-cols-2 gap-16 items-start">
@@ -164,44 +196,61 @@ onUnmounted(() => {
               class="relative bg-background-soft border border-white/5 rounded-2xl p-8 shadow-2xl space-y-4"
             >
               <p class="text-lg leading-relaxed text-text">
-                {{ profileData.bio }}
+                {{ slicedBioData }}
               </p>
+              <button class="text-primary font-medium hover:underline" @click="showBio = !showBio">
+                {{ showBio ? 'Show Less' : 'Read More' }}
+              </button>
             </div>
           </div>
 
           <div class="space-y-6">
-            <h5 class="text-xl font-bold text-heading">Core Skills</h5>
-            <div class="flex flex-wrap gap-3">
-              <span
-                v-for="skill in filteredSkills"
-                :key="skill.name"
-                class="px-4 py-2 rounded-lg bg-background-soft border border-white/5 font-medium"
-                :class="skill.colorClass"
+            <h5 class="text-xl font-bold text-heading">Skills & Education</h5>
+            
+            <!-- Skill Categories Buttons -->
+            <div class="grid grid-cols-2 gap-4">
+              <button 
+                @click="openSkillModal('languages')"
+                class="p-4 rounded-xl bg-background-soft border border-white/5 hover:border-primary/50 text-left transition-all hover:-translate-y-1 group"
               >
-                {{ skill.name }}
-              </span>
-              <button
-                class="px-4 py-2 rounded-lg bg-background-soft border border-white/5 font-medium hover:bg-white/5 transition-colors"
-                @click="showMore = !showMore"
+                <div class="text-3xl mb-2">💻</div>
+                <div class="font-bold text-heading">Languages</div>
+                <div class="text-xs text-text-mute mt-1">JS, TS, C#, etc.</div>
+              </button>
+
+              <button 
+                @click="openSkillModal('frameworks')"
+                class="p-4 rounded-xl bg-background-soft border border-white/5 hover:border-primary/50 text-left transition-all hover:-translate-y-1 group"
               >
-                {{ showMore ? 'Show Less' : 'Show More' }}
+                <div class="text-3xl mb-2">⚛️</div>
+                <div class="font-bold text-heading">Frameworks</div>
+                <div class="text-xs text-text-mute mt-1">FastAPI, Django, .NET</div>
               </button>
             </div>
 
-            <div class="grid grid-cols-2 gap-4 mt-8">
-              <div
-                v-for="stat in skillsData.stats"
-                :key="stat.label"
-                class="p-4 rounded-xl bg-background-soft border border-white/5"
-              >
-                <div class="text-2xl font-bold text-heading">{{ stat.value }}</div>
-                <div class="text-xs text-text-mute">{{ stat.label }}</div>
-              </div>
+            <!-- Education & Achievements Cards -->
+            <div class="grid grid-cols-2 gap-4 mt-4">
+               <InformationCard 
+                 :title="profileData.education.title" 
+                 :subtitle="profileData.education.degree"
+                 :details="[profileData.education.year, profileData.education.grade]"
+               />
+               
+               <InformationCard 
+                 title="Achievements" 
+                 :subtitle="profileData.achievements?.[0]?.title || ''"
+                 :details="[profileData.achievements?.[0]?.count || '', profileData.achievements?.[0]?.level || '']"
+               />
             </div>
           </div>
         </div>
       </div>
     </section>
+
+    <!-- Skills Modal -->
+    <ModalComponent :show="showSkillModal" :title="modalTitle" @close="showSkillModal = false">
+      <SkillItem :skills="modalSkills" />
+    </ModalComponent>
 
     <!-- Experience Section -->
     <section id="experience" class="relative z-10 py-32 px-6 bg-background-soft/30">
@@ -287,9 +336,18 @@ onUnmounted(() => {
           <a
             :href="profileData.linkedin"
             target="_blank"
+            rel="noopener"
             class="inline-flex items-center gap-2 px-10 py-4 rounded-full border border-white/10 bg-background-soft text-heading font-bold text-lg hover:bg-white/5 transition-colors"
           >
             LinkedIn
+          </a>
+          <a
+            :href="profileData.github"
+            target="_blank"
+            rel="noopener"
+            class="inline-flex items-center gap-2 px-10 py-4 rounded-full border border-white/10 bg-background-soft text-heading font-bold text-lg hover:bg-white/5 transition-colors"
+          >
+            GitHub
           </a>
         </div>
       </div>
