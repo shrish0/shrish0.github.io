@@ -127,7 +127,7 @@ const getColors = (index: number) => {
         </h2>
         <div class="text-xl text-on-surface-variant max-w-xl mb-8 leading-relaxed font-body" v-html="resumeData.summary.content"></div>
         <div class="flex flex-wrap gap-4">
-          <a :href="resumeData.basics.customFields.find(f => f.network === 'GitHub' || f.text === 'shrish0')?.link" target="_blank" class="px-8 py-4 aurora-glow text-surface font-bold rounded-xl hover:shadow-[0_0_30px_rgba(143,245,255,0.4)] transition-all cursor-pointer">
+          <a :href="resumeData.basics.customFields.find(f => f.icon === 'GitHub' || f.text === 'shrish0')?.link" target="_blank" class="px-8 py-4 aurora-glow text-surface font-bold rounded-xl hover:shadow-[0_0_30px_rgba(143,245,255,0.4)] transition-all cursor-pointer">
             Access GitHub
           </a>
           <a href="/Resume.pdf" target="_blank" class="px-8 py-4 glass-panel text-primary font-bold rounded-xl hover:bg-surface-container-high transition-all cursor-pointer">
@@ -301,7 +301,7 @@ const getColors = (index: number) => {
           <a :href="`mailto:${resumeData.basics.email}`" class="px-10 py-5 aurora-glow text-surface font-bold rounded-2xl hover:scale-105 transition-all text-lg shadow-[0_10px_30px_rgba(143,245,255,0.2)] cursor-pointer inline-block">
             Establish Connection
           </a>
-          <a :href="resumeData.basics.customFields.find(f => f.network === 'LinkedIn' || f.text === 'shrish')?.link" target="_blank" class="px-10 py-5 bg-surface-container-highest/40 text-primary border border-primary/20 font-bold rounded-2xl hover:bg-surface-container transition-all text-lg cursor-pointer inline-block">
+          <a :href="resumeData.basics.customFields.find(f => f.icon === 'LinkedIn' || f.text === 'shrish')?.link" target="_blank" class="px-10 py-5 bg-surface-container-highest/40 text-primary border border-primary/20 font-bold rounded-2xl hover:bg-surface-container transition-all text-lg cursor-pointer inline-block">
             Access LinkedIn
           </a>
         </div>
