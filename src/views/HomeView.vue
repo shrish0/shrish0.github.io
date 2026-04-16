@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import resumeData from '../../public/resume.json'
+import type { ScrollModuleDirectionType } from '@/utils/types'
 import TechnicalModal from '@/components/technical-modal.vue'
 
 // --- Typewriter Effect & Hero Data ---
@@ -85,7 +86,7 @@ const openSkillModule = (config: any) => {
 }
 
 const modulesContainer = ref<HTMLElement | null>(null)
-const scrollModules = (direction: 'left' | 'right') => {
+const scrollModules = (direction: ScrollModuleDirection) => {
   if (modulesContainer.value) {
     const scrollAmount = 350
     modulesContainer.value.scrollBy({ left: direction === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' })

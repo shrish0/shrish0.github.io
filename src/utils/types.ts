@@ -4,12 +4,14 @@ import { InformationCards } from '@/utils/constants'
 export type InformationCardType = (typeof InformationCards)[keyof typeof InformationCards]
 
 export type SocialIcon = 'linkedin-logo' | 'github-logo' | string
+export type ScrollModuleDirectionType = 'left' | 'right' | string
 
 export interface CustomField {
   id: string
   icon?: SocialIcon
   text?: string
   link?: string
+  network?: string
 }
 
 export interface Basics {
