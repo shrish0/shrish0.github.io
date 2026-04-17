@@ -2,6 +2,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import resumeData from '../../public/resume.json'
 import type { ScrollModuleDirectionType } from '@/utils/types'
+import { profilePhotoLink } from '@/utils/constants'
 import TechnicalModal from '@/components/technical-modal.vue'
 
 // --- Typewriter Effect & Hero Data ---
@@ -140,7 +141,7 @@ const getColors = (index: number) => {
            <!-- Placeholder or actual image -->
           <div class="w-full h-full bg-surface-container-highest rounded-2xl flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-700 overflow-hidden relative group">
              <div class="absolute inset-0 bg-primary/10 group-hover:bg-transparent transition-colors z-10"></div>
-             <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjoNDyRxAscIO1vec3NZn-yaGjIoTMgGrp2WtOZwq-coRmMHMU8L_X6ankpqspbo6-9KwsBNAzW9KGVQ02077R_BV237sS6KTLQXO5D1EYriLdzulkHV6jL0M0Bo2dIivma0gjGlJ9UjAxacu41gl4-RPUQmepdpGmr8IpD34RWPyckAruwGfYies7YeBDGC5V32B1KqlQj2F17LKoxKUB-ISfdaVSq6Z8E5UFoDUoDC76G1YZNJY2L6i8VixMQgxyOqFsX-Vh5Yg" class="w-full h-full object-cover">
+             <img :src="profilePhotoLink" alt="Profile photo" class="w-full h-full object-cover">
           </div>
         </div>
         <!-- Decorative Elements -->
