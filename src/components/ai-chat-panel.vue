@@ -26,6 +26,7 @@ const emit = defineEmits<{
 const messageId = ref(3)
 const draft = ref('')
 const isAiMode = ref(false)
+const hasPingedServer = ref(false)
 const showQuestionPicker = ref(false)
 const chatViewport = ref<HTMLElement | null>(null)
 const messageInput = ref<HTMLTextAreaElement | null>(null)
@@ -112,6 +113,11 @@ const selectQuestion = async (question: string) => {
 const toggleAiMode = async () => {
   isAiMode.value = !isAiMode.value
   showQuestionPicker.value = false
+
+  if (isAiMode.value && !hasPingedServer.value) {
+    hasPingedServer.value = true
+    fetch('https://sentinelai-p4xw.onrender.com/').catch(() => {})
+  }
   await pushAssistantMessage(
     isAiMode.value
       ? 'Backend AI Mode enabled. Pick a suggested question below or type your own prompt.'
@@ -188,7 +194,9 @@ const sendMessage = async () => {
   } catch {
     const loadingMessage = messages.value.find(message => message.id === loadingId)
     if (loadingMessage) {
-      loadingMessage.content = sanitizeMessage(`${props.summary} Ask about skills, experience, projects, or contact details.`)
+      loadingMessage.content = sanitizeMessage(
+        "The AI backend is currently resting or unavailable. Please wait 30-50 seconds for the server to wake up and try again, or switch off AI Mode to ask standard portfolio questions."
+      )
     }
   }
 
