@@ -1,3 +1,5 @@
+export const profilePhotoLink = '/profilePhoto.png'
+
 export const SECTIONS = {
   HOME: 'home',
   ABOUT: 'about',
