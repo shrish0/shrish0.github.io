@@ -1,0 +1,22 @@
+[
+  {
+    "keywords": ["contact", "email", "reach"],
+    "answer": "You can reach me at {email} or connect on LinkedIn at {linkedinUrl}."
+  },
+  {
+    "keywords": ["skill", "backend", "tech", "stack"],
+    "answer": "I specialize in {headline}. Core technologies include {skills}."
+  },
+  {
+    "keywords": ["project", "work", "experience"],
+    "answer": "My work centers on scalable backend services, microservices, asynchronous processing, and real-time systems. Check out the projects section for details."
+  },
+  {
+    "keywords": ["github", "code", "repo"],
+    "answer": "You can explore my code samples and repositories over at my GitHub: {githubUrl}"
+  },
+  {
+    "keywords": ["hi", "hello", "hey", "who"],
+    "answer": "Hi! I'm an automated assistant for Shrish. Ask me about skills, projects, or how to contact Shrish! You can also type '@ai_bot' to ask the real AI backend."
+  }
+]
