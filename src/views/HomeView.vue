@@ -3,6 +3,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import resumeData from '../../public/resume.json'
 import type { ScrollModuleDirectionType } from '@/utils/types'
 import { profilePhotoLink } from '@/utils/constants'
+import AiChatPanel from '@/components/ai-chat-panel.vue'
 import TechnicalModal from '@/components/technical-modal.vue'
 
 // --- Typewriter Effect & Hero Data ---
@@ -34,6 +35,7 @@ onUnmounted(() => {
 
 // --- Skills Data ---
 const showSkillModal = ref(false)
+const showChatPanel = ref(false)
 const activeSkill = ref({})
 
 const getTechIcon = (name: string) => {
@@ -108,6 +110,21 @@ const getColors = (index: number) => {
   const colors = ['primary', 'secondary', 'tertiary']
   return colors[index % colors.length]
 }
+
+const toggleChatPanel = () => {
+  showChatPanel.value = !showChatPanel.value
+}
+
+const closeChatPanel = () => {
+  showChatPanel.value = false
+}
+
+const githubUrl =
+  resumeData.basics.customFields.find(f => f.icon === 'github-logo' || f.icon === 'GitHub' || f.text === 'shrish0')?.link || ''
+const linkedinUrl =
+  resumeData.basics.customFields.find(f => f.icon === 'linkedin-logo' || f.icon === 'LinkedIn' || f.text === 'shrish')?.link || ''
+const visibleSkills = computed(() => resumeData.sections.skills.items.filter(skill => !skill.hidden).map(skill => skill.proficiency))
+const summaryText = resumeData.summary.content.replace(/<[^>]*>/g, '').trim()
 </script>
 
 <template>
@@ -310,8 +327,27 @@ const getColors = (index: number) => {
     </section>
 
     <!-- Floating UI Items -->
+    <AiChatPanel
+      :is-open="showChatPanel"
+      :name="name"
+      :headline="headlineText"
+      :summary="summaryText"
+      :email="resumeData.basics.email"
+      :github-url="githubUrl"
+      :linkedin-url="linkedinUrl"
+      :skills="visibleSkills"
+      @close="closeChatPanel"
+    />
+
     <div class="fixed bottom-8 right-8 z-50">
-      <button class="w-16 h-16 rounded-full aurora-glow flex items-center justify-center shadow-[0_0_30px_rgba(143,245,255,0.6)] hover:scale-110 transition-transform cursor-pointer">
+      <button
+        type="button"
+        class="w-16 h-16 rounded-full aurora-glow flex items-center justify-center shadow-[0_0_30px_rgba(143,245,255,0.6)] hover:scale-110 transition-transform cursor-pointer"
+        :aria-expanded="showChatPanel"
+        aria-controls="ai-chat-panel"
+        aria-label="Open AI portfolio chat"
+        @click="toggleChatPanel"
+      >
         <span class="material-symbols-outlined text-surface text-3xl">smart_toy</span>
       </button>
     </div>
